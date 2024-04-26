@@ -1,0 +1,482 @@
+//librearias a usar 
+import java.awt.event.ActionEvent; // Esta clase representa una acción  como puede ser un boton 
+import java.awt.event.ActionListener; //Esta interfaz es implementada por clases que desean escuchar y responder a eventos
+import java.io.BufferedReader; // Se utiliza para leer datos de texto de un archivo línea por línea
+import java.io.FileReader;//Crea un flujo para leer datos de un archiv
+import java.io.FileWriter;//Crea un flujo para escribir datos en un archivo.
+
+/*
+las otras clases se usan para crear componentes 
+como lo son botones, ventana(GUI), cuadros de texto 
+ */
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+
+//clase principal 
+
+public class Cifrado extends JFrame {
+
+     /*
+     se creara la caja de texto 
+     hacemos un objeto  tipo TextField 
+     
+     al momento de crear el objeto  aremos que sea de uso global 
+     al momento de declarla como STATIC esta pasara a ser una variable global 
+     */
+     static JTextField caja = new JTextField();
+     
+
+     /*
+     agregar el combobox 
+     creamos un objeto  de tipo ComboBox con el nombre de combo 
+     igual este sera de tipo STATIC para que sea una variable global
+     */
+     static JComboBox<String> combo = new JComboBox<String>();
+
+
+    //metodo para cifrar
+    //El método devuelve un valor de tipo String y no recibe ningún parámetro.
+    static String cifrar(){
+
+        //variable llamada cifrada de tipo String. Esta variable estara vacia 
+        String cifrada="";
+
+        //variable llamada "a" que obtendrá  el valor de la caja de texto 
+        String a = caja.getText();
+
+        //variable llamada "v" que obtendrá la longitud del texto que guarde "a"
+        int v = a.length();
+
+        //se hace una variable de tipo entero(int) selecionada del combo box llamado combo 
+        //asi vez convierte lo que este en el combo box a tipo string guardandola en "p" 
+        int p = Integer.parseInt((String) combo.getSelectedItem());
+
+        //ste código verifica si la longitud de la cadena (v) es mayor que cero.
+        if(v > 0){
+
+            //Este bucle for itera sobre cada caracter del texto ingresado.
+            for(int i = 0; i < v; i++){
+
+                //se obtiene el carácter en la posición i del texto ingresado y se almacena en la variable letra.
+                char letra = a.charAt(i);
+
+                //Se convierte el carácter a su valor entero ASCII, se le suma un valor p y se guardara en X
+                int x = ((int)letra)+p;
+
+                //Se concatena el carácter cifrado (convertido de nuevo a carácter) al texto cifrado almacenado en cifrada.
+                cifrada = cifrada + ((char)x);
+            }
+            //en casi de que no se cumpla esto mandara un mensaje de error en el else 
+        }else{
+            JOptionPane.showMessageDialog( null, "No seas tan tonto y mete un texto ", "PopUp Dialog", JOptionPane.ERROR_MESSAGE);
+        }
+
+        //se devuelve el texto cifrado almacenado en la variable cifrada.
+        return cifrada;
+    }
+
+
+    //metodo para desifrar 
+    //El método devuelve un valor de tipo String y no recibe ningún parámetro.
+    static String desifrar(){
+
+
+        //variable llamada cifrada de tipo String. Esta variable estara vacia 
+        String cifrada="";  
+
+
+        //variable llamada "a" que obtendrá  el valor de la caja de texto 
+        String a = caja.getText();
+
+        //variable llamada "v" que obtendrá la longitud del texto que guarde "a"
+        int v = a.length();
+
+
+        int p = Integer.parseInt((String) combo.getSelectedItem());
+        if(v > 0){
+            for(int i = 0; i < v; i++){
+
+                //
+                char letra = a.charAt(i);
+
+                // Se convierte el carácter a su valor entero ASCII, se le resta un valor p y se guardara en X
+                int x=((int)letra)-p;
+
+                //se guarda en cifrada  
+                cifrada = cifrada + ((char)x);
+            }
+        }
+
+        //se devuelve el texto cifrado almacenado en la variable cifrada.
+        return cifrada;
+    }
+
+    /*
+    aremos una función llamada "desifrarDesdeArchivo"
+    que toma dos parámetros: 
+    rutaArchivo, que es una cadena que representa la ruta del archivo que contiene el texto cifrado 
+    y p, que es un entero que representa la cantidad de desplazamiento utilizada en el cifrado.
+     */
+
+     public static String desifrarDesdeArchivo(String rutaArchivo, int p) {
+
+        //esta variable se utilizará para almacenar el texto descifrado.
+        String cifrada = "";
+        
+
+        try {
+
+            // Se crea un objeto BufferedReader para leer el archivo de texto. 
+            //Se utiliza FileReader para abrir el archivo "mensaje.txt" ubicado en la ruta especificada.
+            BufferedReader reader = new BufferedReader(new FileReader("C://Users//taver//OneDrive//Escritorio//mensaje.txt"));
+            
+
+            // Lee el texto cifrado desde el archivo
+            String linea = reader.readLine();
+            while (linea != null) {
+                cifrada += linea;
+                linea = reader.readLine();
+            }
+            //na vez que se han leído todas las líneas del archivo, se cierra el objeto 
+            reader.close();
+
+            //si ocurre algun error 
+        } catch (Exception e) {
+
+            /*e.printStackTrace(). 
+            Esto ayuda en la depuración para identificar problemas potenciales durante la lectura del archivo. 
+            */
+            e.printStackTrace();
+        }
+        
+        //variable llamada cifrada de tipo String. Esta variable estara vacia
+        String descifrada = "";
+
+        //variable llamada "v" que obtendrá la longitud del texto que guarde "a"
+        int v = cifrada.length();
+        
+
+        //ciclo anteriormete explicado desifrar 
+        if (v > 0) {
+            for (int i = 0; i < v; i++) {
+                char letra = cifrada.charAt(i);
+                int x = ((int) letra) - p;
+                descifrada += (char) x;
+            }
+        }
+        
+        //se devuelve el texto cifrado almacenado en la variable cifrada.
+        return descifrada;
+    }
+    
+    
+
+    //metodo para llamado guardar que nos servira para guardar el cifrado 
+    public static void guardar(String cifrado){
+
+        try {
+
+            /*
+             Se crea un objeto FileWriter para escribir en el archivo de texto.
+             Se especifica el nombre "a" y la ubicación del archivo que se va a escribir.
+             */
+            FileWriter a = new FileWriter("C://Users//taver//OneDrive//Escritorio//mensaje.txt");
+            
+
+            //se usa el metodo "write" para escribir el metodo de "cifrado" que se guardara en la variable "a"
+            a.write(cifrado);
+
+            //Esto vacía el archivo de salida y garantiza que los datos se escriban en el archivo.
+            a.flush();
+
+            //mensaje que nos inidca que se guardo correctamente 
+            JOptionPane.showMessageDialog(null, "Texto guardado en archivo.txt", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } 
+
+    }
+
+    //una vez que hemos terminado con el metodo de decifrar ahora aremos el metodo para convertit en binario
+    static String Binario() {
+        StringBuilder binario = new StringBuilder();
+        String a = caja.getText(); // Supongo que "caja" es el nombre de algún componente de interfaz gráfica donde el usuario ingresa texto.
+        int v = a.length();
+        
+        if (v > 0) {
+            for (int i = 0; i < v; i++) {
+                char letra = a.charAt(i);
+                int x = ((int) letra);
+                
+                // Convertir el carácter a su representación binaria manualmente
+                for (int j = 7; j >= 0; j--) {
+                    int bit = (x >> j) & 1;
+                    binario.append(bit);
+                }
+                
+                binario.append(' '); // Agregar un espacio entre cada byte binario
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Hijo nmms pon letras", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        }
+        return binario.toString();
+    }
+
+    static String stringToBinary(String s) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            for (int j = 7; j >= 0; j--) {
+                int bit = (c >> j) & 1;
+                sb.append(bit);
+            }
+            sb.append(' ');
+        }
+        return sb.toString();
+    }
+
+
+    //
+    public static void guardar_Binario(String binario){
+
+        try {
+            FileWriter a = new FileWriter("C://Users//taver//OneDrive//Escritorio//binario.txt");
+            
+            //
+            a.write(binario);
+            a.flush();
+            JOptionPane.showMessageDialog(null, "Texto guardado en archivo.txt", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } 
+
+    }
+
+     static String Binario_texto() {
+        StringBuilder texto = new StringBuilder();
+        String binario = caja.getText(); // obtener el valor de caja 
+        int v = binario.length();
+        int blockSize = 8; // Tamaño de bloque
+        
+        if (v > 0) {
+            // Aseguramos que procesamos grupos de caracteres binarios juntos
+            for (int i = 0; i < v; i += blockSize) {
+                // Aseguramos que tomamos grupos de caracteres binarios o menos si estamos en el último grupo
+                String byteBinario = binario.substring(i, Math.min(i + blockSize, v));
+                
+                // Convertimos los caracteres binarios a un byte decimal
+                int byteDecimal = Integer.parseInt(byteBinario, 2);
+                
+                // Convertimos el byte decimal a un carácter ASCII y lo agregamos al texto
+                texto.append((char) byteDecimal);
+            }
+        } else {
+            JOptionPane.showMessageDialog( null, "No seas tan tonto y mete un texto ", "PopUp Dialog", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        return texto.toString();
+    }
+
+          
+
+    static String binaryToString(String binary) {
+        StringBuilder texto = new StringBuilder();
+
+        // Divide la cadena binaria en bytes separados por espacio
+        String[] bytes = binary.split(" ");
+        for (String byteString : bytes) {
+            // Convierte cada byte binario a un byte decimal
+            int byteDecimal = Integer.parseInt(byteString, 2);
+            // Convierte el byte decimal a un carácter y agrégalo al texto
+            texto.append((char) byteDecimal);
+        }
+
+        return texto.toString();
+    }
+
+
+    //programa principal 
+    public static void main(String[] args) {
+        
+        /*cracion de mi ventana 
+        se crara la ventana por instanciamiento, se cra como tipo objeto 
+        esta ventana se llama "ventana " y lleva por titulo "CIFRADO" 
+         */
+        JFrame ventana = new JFrame("CIFRADO");
+
+        //dimenciones de mi ventana 
+        ventana.setSize(600,450);
+
+        //mostrar la ventana 
+        ventana.setVisible(true);
+
+        //Indica que la aplicación completa debe finaliza
+        ventana.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        //Desactiva el diseño predeterminado para que se pueda usar de forma libre 
+        ventana.setLayout(null);
+ 
+
+        //CUERPO DE LA VENTANA 
+
+        /*etiquta 
+         * cramos un objeto de tipo JLable llamado "etiqueta"
+         */
+        JLabel etiqueta = new JLabel();
+
+        //esta etiqueta llevara por nombre "Favor de escribir "
+        etiqueta.setText("Favor de escribir: ");
+
+        //a nuestro objeto le daremos parametros de tamaño y posicion 
+        etiqueta.setBounds(200, 50, 200, 30);
+
+        //agrgamos "etiqueta" a la ventana 
+        ventana.add(etiqueta);
+
+
+        /*aqui llamamos al abjepto de tipo TextField que creamos previamnete 
+        se le dara un tamaño y una posion de acuerdo al plano carteciano 
+         */  
+        caja.setBounds(100, 100, 300, 30);
+
+        //agregamos nuetra caja de texto a la ventana 
+        ventana.add(caja);
+        
+        
+        /*aqui llamamos al abjepto de tipo JComboBox que creamos previamnete 
+        se le dara un tamaño y una posion de acuerdo al plano carteciano 
+         */
+        combo.setBounds(420, 100, 60, 30);
+
+        //agregamos "combo" a la ventana
+        ventana.add(combo);
+
+        //agregamos items al ComboBox
+        combo.addItem("3");
+        combo.addItem("7");
+        combo.addItem("9");
+
+        /*BOTONES
+         * agregaremos un objeto de tipo JButton con el nombre de "boton" 
+         */
+        JButton boton = new JButton("Cifrar");
+
+        //a nuestro objeto le daremos parametros de tamaño y posicion 
+        boton.setBounds(100, 150, 100, 30);
+
+        //agregamos "boton" a nuestra ventana
+        ventana.add(boton);
+
+        //programamos la funcion del boton 
+        boton.addActionListener(new ActionListener() {
+            //al darle clic al boton ara lo siguente 
+            public void actionPerformed(ActionEvent e) {
+                
+                //llamamos nuestro metodo "cifrar" que ara el cifrado
+                cifrar();
+
+                //llamamos nuestro metodo "guardar" que va a almacenar a "cifrar"    
+                guardar(cifrar());
+        }
+       });
+
+       /*
+        * cramos otro objepto de tipo JButton 
+        recuerda ponerle otro nombre al boton en este caso button
+        */
+       JButton button = new JButton("Desifrar");
+
+
+       //le agregamos el tamñao y su posicion
+       button.setBounds(300, 150, 100, 30);
+
+       //para finalizar agramos nuestro boton(BUTTON) a la ventana 
+       ventana.add(button);
+
+
+       //programacion del boton 
+       button.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+
+
+            try {
+                
+                // Se declara una variable llamada posicionCifrado de tipo String, para almacenar texto.
+                //este método muestra un cuadro de diálogo emergente en la pantalla.
+                String posicionCifrado = JOptionPane.showInputDialog(null, "Ingrese la posición en la que se cifró el mensaje:", "Posición de cifrado", JOptionPane.QUESTION_MESSAGE);
+
+                //Esta línea convierte el valor de texto almacenado en posicionCifrado a un número entero y lo guarda en la variable p.
+                int p = Integer.parseInt(posicionCifrado);
+    
+                // Llamar al método desifrarDesdeArchivo con la posición proporcionada
+                String mensajeDescifrado = desifrarDesdeArchivo("C://Users//taver//OneDrive//Escritorio//mensaje.txt", p);
+    
+                // Hacer lo que quieras con el mensaje descifrado
+                guardar(mensajeDescifrado);
+
+                //muestra el mensaje cifrado
+                JOptionPane.showMessageDialog(null,"el mensaje es "+ cifrar());
+                
+            } catch (Exception e1) {
+
+                //por si hay errores 
+                JOptionPane.showMessageDialog( null, "Porfa mete un numero ", "PopUp Dialog", JOptionPane.ERROR_MESSAGE);
+                
+            }  
+        }
+       });
+
+
+       /*
+        ahora agragamos el boton para comvertit texto en binario 
+        de igual forma cramos  
+        */
+        JButton button2 = new JButton(" CONVERTIR A BINARIO");
+
+
+        //
+        button2.setBounds(300, 250, 190, 30);
+        
+
+        ventana.add(button2);
+
+        //programacion del boton 
+        button2.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+
+                Binario();
+
+
+                guardar_Binario(Binario());
+                
+            }
+
+        });
+
+        //
+        JButton button3 = new JButton("DE BINARIO A TEXTO");
+
+        //
+        button3.setBounds(100, 250, 190, 30);
+
+        ventana.add(button3);
+
+        button3.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+
+                Binario_texto();
+
+
+                guardar_Binario(Binario_texto());
+                
+            }
+
+        });
+   
+    }    
+
+}//fin del programa 
